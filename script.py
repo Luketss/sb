@@ -26,7 +26,15 @@ def movingAverage(dataSet, period=9):
 
 
 def bollingerBands(dataSet, period=14, deviation=2):
-    pass
+    dataSet['SMA'] = dataSet['Close'].rolling(window=period).mean()
+
+    dataSet['STD'] = dataSet['Close'].rolling(window=deviation).std()
+
+    dataSet['Upper'] = dataSet['SMA'] + (dataSet['STD'] * 2)
+    dataSet['Lower'] = dataSet['SMA'] - (dataSet['STD'] * 2)
+
+    column_list = ['SMA', 'Upper', 'Lower']
+    return column_list
 
 def plotBollingerAndMAverage(column_list):
     dataSet[show_list].plot(figsize=(12.2, 6.4))
