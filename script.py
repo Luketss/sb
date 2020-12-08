@@ -22,7 +22,9 @@ def getDataSetFile(file_path):
 
 
 def movingAverage(dataSet, period=9):
-    pass
+    ema = dataSet['Close'].ewm(span=period, adjust=False).mean()
+
+    return ema
 
 
 def bollingerBands(dataSet, period=14, deviation=2):
