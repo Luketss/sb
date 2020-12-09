@@ -12,13 +12,13 @@ DATA_FIM = '2010-10-10'
 
 def getDataSetFile(file_path):
     dt_bitstamp = pd.read_csv(file_path)
+
     print(dt_bitstamp.head())
-    dt_bitstamp = pd.read_csv(file_path)
 
     dt_bitstamp = dt_bitstamp.set_index(pd.DatetimeIndex(dt_bitstamp['Timestamp'].values))
-    #dt_bitstamp = pd.DataFrame(dt_bitstamp, index=pd.date_range(DATA_INICIO, DATA_FIM, freq='H').values)
+    #dt_bitstamp = pd.DataFrame(dt_bitstamp, index=pd.date_range(DATA_INICIO, DATA_FIM).values)  
     #dt_bitstamp = dt_bitstamp.set_index(pd.DatetimeIndex(dt_bitstamp['Timestamp'].values))
-    #print(dt_bitstamp.head())
+    print(dt_bitstamp.head())
 
     # a = pd.to_datetime(dt_bitstamp['Timestamp'], unit='s').dt_bitstamp.strftime('%Y-%m-%d %H:%M')
 
@@ -36,18 +36,18 @@ def movingAverage(dataSet, period=9):
 
 
 def bollingerBands(dataSet, period=14, deviation=2):
-    dataSet['SMA'] = dataSet['Close'].rolling(window=period).mean()
+    dataSet['BBMiddle'] = dataSet['Close'].rolling(window=period).mean()
 
     dataSet['STD'] = dataSet['Close'].rolling(window=deviation).std()
 
-    dataSet['Upper'] = dataSet['SMA'] + (dataSet['STD'] * 2)
-    dataSet['Lower'] = dataSet['SMA'] - (dataSet['STD'] * 2)
+    dataSet['BBUpper'] = dataSet['BBMiddle'] + (dataSet['STD'] * 2)
+    dataSet['BBLower'] = dataSet['BBMiddle'] - (dataSet['STD'] * 2)
 
-    column_list = ['SMA', 'Upper', 'Lower']
+    column_list = ['BBMiddle', 'BBUpper', 'BBLower']
     return column_list
 
-def plotBollingerAndMAverage(column_list):
-    dataSet[show_list].plot(figsize=(12.2, 6.4))
+def plotBollingerAndMAverage(dataSet, column_list):
+    dataSet[column_list].plot(figsize=(12.2, 6.4))
     plt.title('Close Price')
     plt.xlabel('Close Price')
     plt.ylabel('Price')
@@ -61,8 +61,10 @@ def writeDataFrameToCSV(dataSet, column_list):
 
 def main():
     dataSet = getDataSetFile(DT_FILE_PATH)
-    a = bollingerBands(dataSet)
-    writeDataFrameToCSV(dataSet, a)
+    bands = bollingerBands(dataSet)
+    bands.append('Close')
+    plotBollingerAndMAverage(dataSet, bands)
+    #writeDataFrameToCSV(dataSet, bands)
 
     #dataSet.to_csv('teste.csv')
 
