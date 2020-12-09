@@ -31,13 +31,17 @@ def getDataSetFile(file_path):
 
     #print(df['Timestamp'].loc[DATA_INICIO:DATA_FIM])
 
+def simpleMovingAverage(dataSet, period=40):
+    ma = dataSet['Close'].rolling(window=period).mean()
+    return ma
+
 
 def movingAverage(dataSet, period=9):
     dataSet['EMA'] = dataSet['Close'].ewm(span=period, adjust=False).mean()
 
 
 def bollingerBands(dataSet, period=14, deviation=2):
-    dataSet['MA'] = dataSet['Close'].rolling(window=period).mean()
+    dataSet['MA'] = simpleMovingAverage(dataSet, period)
 
     dataSet['STD'] = dataSet['Close'].rolling(window=deviation).std()
 
