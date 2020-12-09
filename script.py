@@ -41,26 +41,46 @@ def movingAverage(dataSet, period=9):
 
 
 def bollingerBands(dataSet, period=14, deviation=2):
+    #calcula a media movel simples utilizando a funcao criada anteriormente
     dataSet['MA'] = simpleMovingAverage(dataSet, period)
 
+    #calcula o valor do desvio para aplicar no calculo da banda inferior e superior 
     dataSet['STD'] = dataSet['Close'].rolling(window=deviation).std()
 
+    #calcula o valor da banda superior e inferior utilizando o valor da média central +/- desvio
     dataSet['BBUpper'] = dataSet['MA'] + (dataSet['STD'] * 2)
     dataSet['BBLower'] = dataSet['MA'] - (dataSet['STD'] * 2)
 
-    column_list = ['MA', 'BBUpper', 'BBLower']
-    return column_list
+
+def RSI(dataSet, period=14):
+    close = dataSet['Close']
+    #Verifica o valor atual com o valor anterior
+    delta = close.diff()
+
+    #Se o valor for maior que zero siginifica que ele teve um ganho, se ele for negativo, teve perda.
+    #Sempre que o valor entrar para positivo, o lado contrario deve ser negativo
+    positive, negative = delta.copy(), delta.copy()
+    positive[positive < 0] = 0
+    negative[negative > 0] = 0
+
+    #RSI sendo calculado com base em uma EWMA
+    avgUp = positive.ewm(span=period).mean()
+    avgDown = negative.abs().ewm(span=period).mean()
+
+    relativeStrength = avgUp / avgDown
+    dataSet['RSI'] = 100.0 - (100.0 / (1.0 + relativeStrength))
+
 
 def plotBollingerAndMAverage(dataSet, column_list):
     dataSet[column_list].plot(figsize=(12.2, 6.4))
-    plt.title('Close Price')
+    plt.title('Bitcon Historical Data')
     plt.xlabel('Close Price')
     plt.ylabel('Price')
     plt.show()
 
 
-def writeDataFrameToCSV(dataSet, column_list):
-    finalDataFrame = dataSet[['Timestamp', 'MA', 'BBUpper', 'BBLower','EMA']]
+def writeDataFrameToCSV(dataSet):
+    finalDataFrame = dataSet[['Timestamp', 'MA', 'BBUpper', 'BBLower','EMA', 'RSI']]
     print(finalDataFrame.head())
 
     finalDataFrame = finalDataFrame.set_index(pd.DatetimeIndex(finalDataFrame['Timestamp'].values))
@@ -73,9 +93,10 @@ def main():
     dataSet = getDataSetFile(DT_FILE_PATH)
     dataSet.head()
     movingAverage(dataSet)
-    bands = bollingerBands(dataSet,2)
+    bollingerBands(dataSet,2)
+    RSI(dataSet, 2)
     # plotBollingerAndMAverage(dataSet, bands)
-    writeDataFrameToCSV(dataSet, bands)
+    writeDataFrameToCSV(dataSet)
 
 
 if __name__ == '__main__':
