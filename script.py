@@ -71,11 +71,11 @@ def RSI(dataSet, period=14):
     dataSet['RSI'] = 100.0 - (100.0 / (1.0 + relativeStrength))
 
 
-def plotBollingerAndMAverage(dataSet, column_list):
-    dataSet[['Timestamp', 'MA', 'BBUpper', 'BBLower','EMA', 'RSI']].plot(figsize=(12.2, 6.4))
+def plotIndicatorsOnGraph(dataSet):
+    dataSet[['Close', 'MA', 'BBUpper', 'BBLower','EMA', 'RSI']].plot(figsize=(12.2, 6.4))
     plt.title('Bitcon Historical Data')
-    plt.xlabel('Close Price')
-    plt.ylabel('Price')
+    plt.xlabel('Value')
+    plt.ylabel('Close Price')
     plt.show()
 
 
@@ -95,7 +95,7 @@ def main():
     movingAverage(dataSet)
     bollingerBands(dataSet,2)
     RSI(dataSet, 2)
-    # plotBollingerAndMAverage(dataSet, bands)
+    plotIndicatorsOnGraph(dataSet)
     writeDataFrameToCSV(dataSet)
 
 
