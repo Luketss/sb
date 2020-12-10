@@ -63,7 +63,7 @@ def RSI(dataSet, period=14):
     positive[positive < 0] = 0
     negative[negative > 0] = 0
 
-    #RSI sendo calculado com base em uma EWMA
+    #Com base nos positivos e negativos, calculamos o ganho/perda media - sendo calculado com base em uma EWMA
     avgUp = positive.ewm(span=period).mean()
     avgDown = negative.abs().ewm(span=period).mean()
 
@@ -72,7 +72,7 @@ def RSI(dataSet, period=14):
 
 
 def plotBollingerAndMAverage(dataSet, column_list):
-    dataSet[column_list].plot(figsize=(12.2, 6.4))
+    dataSet[['Timestamp', 'MA', 'BBUpper', 'BBLower','EMA', 'RSI']].plot(figsize=(12.2, 6.4))
     plt.title('Bitcon Historical Data')
     plt.xlabel('Close Price')
     plt.ylabel('Price')
@@ -86,7 +86,7 @@ def writeDataFrameToCSV(dataSet):
     finalDataFrame = finalDataFrame.set_index(pd.DatetimeIndex(finalDataFrame['Timestamp'].values))
     print(finalDataFrame.head())
 
-    finalDataFrame.to_csv('teste.csv')
+    finalDataFrame.to_csv('final.csv')
 
 
 def main():
